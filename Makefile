@@ -9,7 +9,7 @@ TEST = test/Runner
 all:
 	javac $(GAME).java
 
-run:
+run: all
 	java $(GAME)
 
 $(DOCS): .PHONY
