@@ -3,7 +3,7 @@ import java.net.*;
 import java.io.*;
 import java.util.Scanner;
 
-public class UDP {
+public class Client {
 	public static UDPServer server;
 	public static UDPClient client;
 
@@ -16,9 +16,11 @@ public class UDP {
 
 		client = new UDPClient();
 		client.connect(addr,9999);
-		Scanner scanner = new Scanner(System. in); 
+		Scanner scanner = new Scanner(System.in); 
 		while(true){
-			client.send(scanner.nextLine());
+			String s = scanner.nextLine();
+			client.send(s);
+			System.out.println("Sent: " + s);
 		}
 	}
 }

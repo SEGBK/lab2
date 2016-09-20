@@ -24,6 +24,23 @@ public class UDPClient extends NetworkStream{
 			System.out.println(ex.getMessage());		
 		}
 
+		socket.connect(address, port);
+		while(!socket.isConnected()){
+			System.out.println("Waiting for connection...");
+		}
+		try {
+			String handshakeData = "@" + addr.getHostAddress() + "@";
+			byte[] buf = handshakeData.getBytes();
+			DatagramPacket handshake = new DatagramPacket(buf, buf.length, addr, port);
+			socket.send(handshake);
+		}
+		catch(IOException ex) {
+			System.out.println(ex.getMessage());
+		}
+
+		ListenerThread l = new ListenerThread(socket);
+		(new Thread(l)).start();
+
 	}
 	public void send(final String data){
 		try {
@@ -36,6 +53,23 @@ public class UDPClient extends NetworkStream{
 	}
 }
 
-class RecieveThread extends Thread {
+class ListenerThread implements Runnable {
+	private DatagramSocket socket; 
 
+	public void run(){
+		while(true){
+			byte[] buf = new byte[256];
+			DatagramPacket p = new DatagramPacket(buf, buf.length);
+			try {
+				socket.receive(p);
+				String received = new String(p.getData(), 0, p.getLength());
+				System.out.println(received);
+			} catch (IOException ex){
+				System.out.println(ex.getMessage());		
+			}
+		}
+	}
+	public ListenerThread(DatagramSocket socket){
+		this.socket = socket;
+	}
 }
