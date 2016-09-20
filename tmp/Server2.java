@@ -3,7 +3,7 @@ import java.net.*;
 import java.io.*;
 import java.util.Scanner;
 
-public class Server {
+public class Server2 {
 	public static UDPServer server;
 	public static UDPClient client;
 
