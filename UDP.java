@@ -1,6 +1,7 @@
 import lib.*;
 import java.net.*;
 import java.io.*;
+import java.util.Scanner;
 
 public class UDP {
 	public static UDPServer server;
@@ -9,17 +10,15 @@ public class UDP {
 	public static void main(String[] args){
 		InetAddress addr = null;
 		try {	
-			addr = InetAddress.getLocalHost();
+			addr = InetAddress.getByName(args[0]);
 		} catch (UnknownHostException e){
 		}
 
-		server = new UDPServer();
 		client = new UDPClient();
-		server.start(9999);
-		System.out.println("Server Started");
 		client.connect(addr,9999);
-		System.out.println("Client Conntected");
-		client.send("asdf");
-		System.out.println("Message Sent");
+		Scanner scanner = new Scanner(System. in); 
+		while(true){
+			client.send(scanner.nextLine());
+		}
 	}
 }

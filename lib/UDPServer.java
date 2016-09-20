@@ -29,7 +29,7 @@ public class UDPServer extends NetworkStream{
 		}
 
 		ListenerThread l = new ListenerThread(server);
-		l.run();
+		(new Thread(l)).start();
 		//try {}
 		//catch(SocketException ex){}
 		//catch(IOException ex){}
@@ -49,12 +49,12 @@ class ListenerThread implements Runnable {
 			byte[] buf = new byte[256];
 			DatagramPacket p = new DatagramPacket(buf, buf.length);
 			try {
-				System.out.println("shits hanging yo");
 				socket.receive(p);
+				String received = new String(p.getData(), 0, p.getLength());
+				System.out.println(received);
 			} catch (IOException ex){
 				System.out.println(ex.getMessage());		
 			}
-			System.out.println(p);
 		}
 	}
 	public ListenerThread(DatagramSocket socket){
