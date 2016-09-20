@@ -5,32 +5,34 @@ import java.io.*;
 import lib.NetworkStream;
 
 public class UDPClient extends NetworkStream{
+	private int port;
+	private InetAddress addr;
+	private DatagramSocket socket;
+	private DatagramPacket packet;
 
-	public void connect(int port){
-		InetAddress addr = null;
-		try {		
-			addr = InetAddress.getLocalHost();
-			byte[] ipAddr = addr.getAddress();
-
-			String hostname = addr.getHostName();
-		    System.out.println("Server Name: " + addr.getHostAddress() + "\nServer Port: " + port);
-		} catch (UnknownHostException e){
-
-		}
+	public void connect(InetAddress address, int port){
+		this.port = port;
+		this.addr = address;
 
 		UDPServerListener dataListener = new UDPServerListener();
 		receive(dataListener);
 
 		try {
-			socket = new Socket(addr, port);
-			System.out.println(socket.isConnected());
+			socket = new DatagramSocket();
 		}
-		catch(SocketException ex){}
-		catch(IOException ex){}
+		catch(SocketException ex){
+			System.out.println(ex.getMessage());		
+		}
 
 	}
-	public void send(String data){
-		
+	public void send(final String data){
+		try {
+			byte[] buf = data.getBytes();
+			DatagramPacket packet = new DatagramPacket(buf, buf.length, addr, port);
+			socket.send(packet);
+		} catch (IOException ex){
+			System.out.println(ex.getMessage());		
+		}
 	}
 }
 
