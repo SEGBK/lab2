@@ -12,7 +12,7 @@ abstract class NetworkStream {
      * Send data across the socket.
      * @param data the data to send over in string form
      */
-    public abstract void send(String data);
+    public abstract void send(final String data);
 
     private ArrayList<DataListener> onDataListeners = new ArrayList<DataListener>(),
                                     onErrorListeners = new ArrayList<DataListener>();
