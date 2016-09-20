@@ -6,13 +6,8 @@
 package lib;
 
 import java.util.ArrayList;
-import java.net.Socket;
-import java.net.ServerSocket;
 
 abstract class NetworkStream {
-    protected Socket socket = null;
-    protected ServerSocket server = null;
-
     /**
      * Send data across the socket.
      * @param data the data to send over in string form
