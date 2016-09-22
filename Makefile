@@ -16,8 +16,8 @@ $(DOCS): .PHONY
 	javadoc $(SRC) -d $(DOCS)
 
 test: .PHONY
-	javac $(TST).java
-	java $(TST)
+	javac $(TEST).java
+	java $(TEST)
 
 clean:
 	rm *.class lib/*.class test/*.class
