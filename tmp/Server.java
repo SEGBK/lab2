@@ -17,7 +17,7 @@ public class Server {
 		(new Thread(t)).start();
 
 		server = new UDPServer();
-		server.start(9999);
+		server.start(8080);
 	}
 }
 class ReadLineThread implements Runnable {
