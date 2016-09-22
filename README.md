@@ -3,4 +3,4 @@
 All source code exists between [Game.java](Game.java)
 and the [`lib/`](lib) directory.
 
-Documentation available at [segbk.github.io/lab2](segbk.github.io/lab2).
+Documentation available at [segbk.github.io/lab2](http://segbk.github.io/lab2).
