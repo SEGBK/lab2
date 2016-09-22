@@ -20,7 +20,7 @@ test: .PHONY
 	java $(TEST)
 
 clean:
-	rm *.class lib/*.class test/*.class
+	rm -f *.class lib/*.class test/*.class
 	rm -rf $(DOCS)
 
 .PHONY:
