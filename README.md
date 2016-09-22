@@ -1,4 +1,4 @@
-# SEG2105: Lab 2
+# SEG2105: Lab 2 ![build status: unknown](https://travis-ci.org/SEGBK/lab2.svg?branch=master)
 
 All source code exists between [Game.java](Game.java)
 and the [`lib/`](lib) directory.
