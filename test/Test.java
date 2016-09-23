@@ -12,7 +12,7 @@ abstract class Test {
     /**
      * Runs the assertions for this test.
      */
-    public abstract void test();
+    public abstract void test() throws Throwable;
 
     /**
      * Tests if two values are equal. Passes the assertion
@@ -44,10 +44,17 @@ abstract class Test {
      * Runs the test and measures success rate.
      */
     public boolean run() {
-        System.out.format("\u001b[36m%s\u001b[39m\n\n", this.name);
-        this.test();
-        System.out.format("\n \u001b[36m%d/%d assertions passed\u001b[39m\n", this.passed, this.attempted);
-        return this.passed == this.attempted;
+        try {
+            System.out.format("\u001b[36m%s\u001b[39m\n\n", this.name);
+            this.test();
+            System.out.println();
+        } catch (Throwable th) {
+            this.attempted += 1;
+            System.out.format("\n \u001b[31mTest threw exception: %s\u001b[39m\n", th.getMessage());
+        } finally {
+            System.out.format(" \u001b[36m%d/%d assertions passed\u001b[39m\n", this.passed, this.attempted);
+            return this.passed == this.attempted;
+        }
     }
 
     /**
