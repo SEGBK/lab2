@@ -61,6 +61,7 @@ class ListenerThread implements Runnable {
 			byte[] buf = new byte[256];
 			DatagramPacket p = new DatagramPacket(buf, buf.length);
 			try {
+				System.out.println("Waiting...");
 				socket.receive(p);
 				String received = new String(p.getData(), 0, p.getLength());
 				System.out.println(received);

@@ -20,6 +20,7 @@ public class StartView extends JFrame {
         // btnHost
         JButton btnHost = new JButton("Host a Game");
         btnHost.setMargin(new Insets(40, 30, 40, 30));
+        btnHost.setPreferredSize(new Dimension(80, 40));
         btnHost.setAlignmentX(Component.CENTER_ALIGNMENT);
         btnHost.setBackground(Color.darkGray);
         btnHost.setOpaque(true);
@@ -28,6 +29,7 @@ public class StartView extends JFrame {
         // btnJoin
         JButton btnJoin = new JButton("Join a Game");
         btnJoin.setMargin(new Insets(40, 30, 40, 30));
+        btnHost.setPreferredSize(new Dimension(80, 40));
         btnJoin.setAlignmentX(Component.CENTER_ALIGNMENT);
         btnJoin.setBackground(Color.darkGray);
         pane.add(btnJoin);

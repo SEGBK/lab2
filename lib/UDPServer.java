@@ -9,7 +9,7 @@ public class UDPServer extends NetworkStream{
 	private DatagramSocket server;
 	private InetAddress addr = null;
 	private int port;
-	private ArrayList<InetAddress> clients;
+	public static ArrayList<InetAddress> clients;
 
 	public void start(int port){
 		clients = new ArrayList<InetAddress>();
@@ -40,9 +40,12 @@ public class UDPServer extends NetworkStream{
 	public void send(final String data){
 		try {
 			for(int i = 0; i < clients.size(); i++){
+				DatagramSocket socket = new DatagramSocket();
+				socket.connect(clients.get(i), port);
+				System.out.println(clients.get(i).getHostAddress());
 				byte[] buf = data.getBytes();
-				DatagramPacket packet = new DatagramPacket(buf, buf.length, clients.get(i), port);
-				server.send(packet);	
+				DatagramPacket packet = new DatagramPacket(buf, buf.length);
+				socket.send(packet);	
 			}
 		} catch (IOException ex){
 			System.out.println(ex.getMessage());		
@@ -59,10 +62,10 @@ class ServerListenerThread implements Runnable {
 			DatagramPacket p = new DatagramPacket(buf, buf.length);
 			try {
 				socket.receive(p);
-				if ((char)p.getData()[0] == '@' && (char)p.getData()[p.getLength()-1] == '@'){
+				if ((char)p.getData()[0] == '@' && (char)p.getData()[p.getLength()-1] == '@') {
 					System.out.println("Handshake received");
 					String received = new String(p.getData(), 0, p.getLength());
-					clients.add(InetAddress.getByName(received.replace('@',' ').trim()));
+					UDPServer.clients.add(InetAddress.getByName(received.replace('@',' ').trim()));
 					System.out.println("Added: " + received.replace('@',' '));
 				} else {
 					String received = new String(p.getData(), 0, p.getLength());
