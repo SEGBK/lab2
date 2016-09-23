@@ -8,8 +8,11 @@ package lib;
 
 import java.net.Socket;
 import java.net.ServerSocket;
-import java.io.*;
 import java.util.ArrayList;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.InputStreamReader;
+import java.io.InputStreamWriter;
 
 public class TCPStream extends NetworkStream {
     private Socket socket;
