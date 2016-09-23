@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.InputStreamReader;
-import java.io.InputStreamWriter;
+import java.io.OutputStreamWriter;
 
 public class TCPStream extends NetworkStream {
     private Socket socket;
