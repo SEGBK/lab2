@@ -15,7 +15,7 @@ public class Client {
 		}
 
 		client = new UDPClient();
-		client.connect(addr,8080);
+		client.connect(addr,9999);
 		Scanner scanner = new Scanner(System.in); 
 		while(true){
 			String s = scanner.nextLine();
