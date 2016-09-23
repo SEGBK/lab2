@@ -15,13 +15,7 @@ public final class Runner {
              * All the objects below should implement
              * the interface Test.
              */
-            new Test("Test basic test runner") {
-                public void test() {
-                    Test.equal(10, 10, "10 should equal 10");
-                    // Test.equal(10, 15, "10 should not equal 15");
-                }
-            },
-            //new DataListenerTest(),
+            new DataListenerTest(),
             //new TCPStreamClientTest(),
             //new TCPStreamServerTest(),
             //new UDPStreamClientTest(),
