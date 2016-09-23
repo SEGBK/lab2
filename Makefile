@@ -2,7 +2,7 @@
 # Contains all build information to make life easier.
 
 GAME = Game
-SRC  = lib/*.java $(GAME).java
+SRC  = lib/*.java $(GAME).java test/*.java
 DOCS = docs
 TEST = test/Runner
 
