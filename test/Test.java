@@ -10,7 +10,9 @@ abstract class Test {
     private static int passed, attempted;
 
     /**
-     * Runs the assertions for this test.
+     * Runs the assertions for this test. The assertion
+     * of 'does not throw' is automatically wrapped over
+     * the test.
      */
     public abstract void test() throws Throwable;
 
