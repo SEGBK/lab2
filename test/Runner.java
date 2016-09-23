@@ -16,7 +16,7 @@ public final class Runner {
              * the interface Test.
              */
             new DataListenerTest(),
-            //new TCPStreamClientTest(),
+            new TCPStreamClientTest(),
             //new TCPStreamServerTest(),
             //new UDPStreamClientTest(),
             //new UDPStreamServerTest()
