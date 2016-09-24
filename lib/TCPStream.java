@@ -20,9 +20,6 @@ public class TCPStream extends NetworkStream {
     private Socket socket;
     private BufferedReader reader;
     private BufferedWriter writer;
-    private boolean open = false;
-    private ArrayList<Runnable> onConnectListeners = new ArrayList<Runnable>(),
-                                onDisconnectListeners = new ArrayList<Runnable>();
 
     /**
      * Creates an instance of TCPStream as a client.
@@ -32,13 +29,18 @@ public class TCPStream extends NetworkStream {
     public TCPStream(final String host, final int port) {
         final TCPStream that = this;
 
+        this.onDisconnect(new Runnable() {
+            public void run() {
+                that.close();
+            }
+        });
+
         new Thread(new Runnable() {
             public void run() {
                 try {
                     that.socket = new Socket(host, port);
                     that.setup();
                 } catch (Throwable t) {
-                    that.open = false;
                     that.dispatchErrorListener(t.getMessage());
                 }
             }
@@ -52,6 +54,12 @@ public class TCPStream extends NetworkStream {
     public TCPStream(final int port) {
         final TCPStream that = this;
 
+        this.onDisconnect(new Runnable() {
+            public void run() {
+                that.close();
+            }
+        });
+
         new Thread(new Runnable() {
             public void run() {
                 try {
@@ -59,8 +67,6 @@ public class TCPStream extends NetworkStream {
                     that.socket = new ServerSocket(port).accept();
                     that.setup();
                 } catch (Throwable t) {
-                    that.open = false;
-
                     if (t.getMessage() != null) {
                         that.dispatchErrorListener(t.getMessage());
                     } else {
@@ -78,41 +84,7 @@ public class TCPStream extends NetworkStream {
      * Returns the state of the TCPStream.
      * @return true if the socket is open, false otherwise
      */
-    public boolean isOpen() { return this.open; }
-
-    /**
-     * Add an event listener for the connect event.
-     * @param listener the event listener in the form of a Runnable
-     */
-    public void onConnect(Runnable listener) {
-        this.onConnectListeners.add(listener);
-    }
-
-    /**
-     * Add an event listener for the disconnect event.
-     * @param listener the event listener in the form of a Runnable
-     */
-    public void onDisconnect(Runnable listener) {
-        this.onDisconnectListeners.add(listener);
-    }
-
-    /**
-     * Dispatch all the event listeners for the connect listeners.
-     */
-    private void dispatchConnectListener() {
-        for (Runnable listener : this.onConnectListeners) {
-            listener.run();
-        }
-    }
-
-    /**
-     * Dispatch all the event listeners for the disconnect listeners.
-     */
-    private void dispatchDisconnectListener() {
-        for (Runnable listener : this.onDisconnectListeners) {
-            listener.run();
-        }
-    }
+    public boolean isOpen() { return this.socket != null && this.socket.isConnected(); }
 
     /**
      * Create the i/o streams and start their processes.
@@ -123,34 +95,32 @@ public class TCPStream extends NetworkStream {
         new Thread(new Runnable() {
             public void run() {
                 try {
-                    that.open = true;
-
-                    // dispatch connected event
-                    that.dispatchConnectListener();
-
                     // grab i/o
                     that.reader = new BufferedReader(new InputStreamReader(that.socket.getInputStream()));
                     that.writer = new BufferedWriter(new OutputStreamWriter(that.socket.getOutputStream()));
 
+                    // dispatch connected event
+                    that.dispatchConnectListener();
+
                     // as data comes in, dispatch events
-                    while (that.isOpen()) {
+                    while (that.socket.isConnected()) {
                         while (!that.reader.ready());
                         that.dispatchDataListener(that.reader.readLine());
                     }
-
-                    // then dispatch disconnect
-                    that.dispatchDisconnectListener();
                 } catch (Throwable t) {
-                    that.open = false;
-
                     if (t.getMessage() != null) {
                         that.dispatchErrorListener(t.getMessage());
+                    } else if (t.getMessage().equals("Stream closed")) {
+                        // ...
                     } else {
                         StringWriter sw = new StringWriter();
                         PrintWriter pw = new PrintWriter(sw);
                         t.printStackTrace(pw);
                         that.dispatchErrorListener(sw.toString());
                     }
+                } finally {
+                    // then dispatch disconnect
+                    that.dispatchDisconnectListener();
                 }
             }
         }).start();
@@ -163,17 +133,15 @@ public class TCPStream extends NetworkStream {
     public void send(final String data) {
         final TCPStream that = this;
 
-        if (this.open) {
+        if (this.socket != null && this.socket.isConnected()) {
             new Thread(new Runnable() {
                 public void run() {
                     try {
-                        if(that.open)return;
+                        if (!that.socket.isConnected()) return;
                         that.writer.write(data);
                         that.writer.newLine();
                         that.writer.flush();
                     } catch (Throwable t) {
-                        that.open = false;
-
                         if (t.getMessage() != null) {
                             that.dispatchErrorListener(t.getMessage());
                         } else {
@@ -185,6 +153,21 @@ public class TCPStream extends NetworkStream {
                     }
                 }
             }).start();
-        }
+        } else this.dispatchErrorListener("Error: Connection is not open.");
+    }
+
+    /**
+     * Close the underlying connection.
+     */
+    public void close() {
+        if (this.socket != null && this.socket.isConnected()) {
+            try {
+                if (this.reader != null) this.reader.close();
+                if (this.writer != null) this.writer.close();
+                this.socket.close();
+            } catch (Throwable t){
+                t.printStackTrace();
+            }
+        } else this.dispatchErrorListener("Error: Connection is not open.");
     }
 }
