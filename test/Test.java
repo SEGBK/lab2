@@ -8,6 +8,7 @@ package test;
 abstract class Test {
     private String name;
     private static int passed, attempted;
+    private final static TimeoutHandler timeout = new TimeoutHandler(3000);
 
     /**
      * Runs the assertions for this test. The assertion
@@ -26,6 +27,7 @@ abstract class Test {
      */
     public static <T> void equal(T given, T expected, String message) {
         boolean success = expected.equals(given);
+        timeout.reset();
 
         // writes the assertion in red upon failure,
         // and green upon success. a checkmark preceeds the
@@ -48,17 +50,32 @@ abstract class Test {
      */
     public void run(final TestEnd next) {
         final Test that = this;
+        final FBool failed = new FBool();
 
         try {
             System.out.format("\n\u001b[36m%s\u001b[39m\n\n", this.name);
+            timeout.onFail(new Runnable() {
+                public void run() {
+                    timeout.stop();
+                    failed.set(true);
+                    System.out.println("\n \u001b[31mTest timed out.\u001b[39m");
+                    next.run(false);
+                }
+            });
+            timeout.start();
+
             this.test(new Runnable() {
                 public void run() {
-                    System.out.println();
-                    System.out.format(" \u001b[36m%d/%d assertions passed\u001b[39m\n", that.passed, that.attempted);
-                    next.run(that.passed == that.attempted);
+                    if (!failed.state()) {
+                        timeout.stop();
+                        System.out.println();
+                        System.out.format(" \u001b[36m%d/%d assertions passed\u001b[39m\n", that.passed, that.attempted);
+                        next.run(that.passed == that.attempted);
+                    }
                 }
             });
         } catch (Throwable th) {
+            timeout.stop();
             this.attempted += 1;
             th.printStackTrace();
             System.out.format("\n \u001b[31mTest threw exception: %s\u001b[39m\n", th.getMessage());
