@@ -50,7 +50,7 @@ abstract class Test {
         final Test that = this;
 
         try {
-            System.out.format("\u001b[36m%s\u001b[39m\n\n", this.name);
+            System.out.format("\n\u001b[36m%s\u001b[39m\n\n", this.name);
             this.test(new Runnable() {
                 public void run() {
                     System.out.println();
