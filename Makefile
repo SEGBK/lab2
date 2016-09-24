@@ -7,7 +7,7 @@ DOCS = docs
 TEST = test/Runner
 
 all:
-	javac $(GAME).java
+	javac $(SRC)
 
 run: all
 	java $(GAME)
@@ -16,7 +16,7 @@ $(DOCS): .PHONY
 	javadoc $(SRC) -d $(DOCS)
 
 test: .PHONY
-	javac $(TEST).java
+	javac test/*.java
 	java $(TEST)
 
 clean:
