@@ -14,8 +14,15 @@ abstract class NetworkStream {
      */
     public abstract void send(final String data);
 
+    /**
+     * Closes the underlying connection.
+     */
+    public abstract void close();
+
     private ArrayList<DataListener> onDataListeners = new ArrayList<DataListener>(),
                                     onErrorListeners = new ArrayList<DataListener>();
+    private ArrayList<Runnable> onConnectListeners = new ArrayList<Runnable>(),
+                                onDisconnectListeners = new ArrayList<Runnable>();
 
     /**
      * Add an event listener for when errors happen.
@@ -55,6 +62,40 @@ abstract class NetworkStream {
     protected void dispatchErrorListener(String message) {
         for (DataListener listener : this.onErrorListeners) {
             listener.eventHandler(message);
+        }
+    }
+
+    /**
+     * Add an event listener for the connect event.
+     * @param listener the event listener in the form of a Runnable
+     */
+    public void onConnect(Runnable listener) {
+        this.onConnectListeners.add(listener);
+    }
+
+    /**
+     * Add an event listener for the disconnect event.
+     * @param listener the event listener in the form of a Runnable
+     */
+    public void onDisconnect(Runnable listener) {
+        this.onDisconnectListeners.add(listener);
+    }
+
+    /**
+     * Dispatch all the event listeners for the connect listeners.
+     */
+    protected void dispatchConnectListener() {
+        for (Runnable listener : this.onConnectListeners) {
+            listener.run();
+        }
+    }
+
+    /**
+     * Dispatch all the event listeners for the disconnect listeners.
+     */
+    protected void dispatchDisconnectListener() {
+        for (Runnable listener : this.onDisconnectListeners) {
+            listener.run();
         }
     }
 }
