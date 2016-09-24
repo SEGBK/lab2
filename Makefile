@@ -21,7 +21,5 @@ test: .PHONY
 
 clean:
 	rm -f *.class lib/*.class test/*.class
-	rm -rf $(DOCS)
 
 .PHONY:
-
