@@ -12,10 +12,11 @@ class DataListenerTest extends Test {
         super("test lib.DataListener");
     }
 
-    public void test() throws Throwable {
+    public void test(final Runnable end) throws Throwable {
         new DataListener() {
             public void eventHandler(String data) {
                 Test.equal(data, "TST_EVT", "test event should receive proper data");
+                end.run();
             }
         }.eventHandler("TST_EVT");
     }

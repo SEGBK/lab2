@@ -18,7 +18,7 @@ class TCPStreamClientTest extends Test {
         super("test lib.TCPStream as client");
     }
 
-    public void test() throws Throwable {
+    public void test(final Runnable end) throws Throwable {
         // create a new instance of TCPStream as client
         final TCPStream client = new TCPStream("localhost", 8080);
 
@@ -32,6 +32,7 @@ class TCPStreamClientTest extends Test {
                 Test.equal(testRun, false, "should only call onConnect once");
                 Test.equal(client.isOpen(), true, "socket should be open during onConnect");
                 testRun = true;
+                end.run();
             }
         });
 
