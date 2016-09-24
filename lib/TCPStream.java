@@ -9,6 +9,8 @@ package lib;
 import java.net.Socket;
 import java.net.ServerSocket;
 import java.util.ArrayList;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.InputStreamReader;
@@ -58,7 +60,15 @@ public class TCPStream extends NetworkStream {
                     that.setup();
                 } catch (Throwable t) {
                     that.open = false;
-                    that.dispatchErrorListener(t.getMessage());
+
+                    if (t.getMessage() != null) {
+                        that.dispatchErrorListener(t.getMessage());
+                    } else {
+                        StringWriter sw = new StringWriter();
+                        PrintWriter pw = new PrintWriter(sw);
+                        t.printStackTrace(pw);
+                        that.dispatchErrorListener(sw.toString());
+                    }
                 }
             }
         }).start();
@@ -132,7 +142,15 @@ public class TCPStream extends NetworkStream {
                     that.dispatchDisconnectListener();
                 } catch (Throwable t) {
                     that.open = false;
-                    that.dispatchErrorListener(t.getMessage());
+
+                    if (t.getMessage() != null) {
+                        that.dispatchErrorListener(t.getMessage());
+                    } else {
+                        StringWriter sw = new StringWriter();
+                        PrintWriter pw = new PrintWriter(sw);
+                        t.printStackTrace(pw);
+                        that.dispatchErrorListener(sw.toString());
+                    }
                 }
             }
         }).start();
@@ -149,12 +167,21 @@ public class TCPStream extends NetworkStream {
             new Thread(new Runnable() {
                 public void run() {
                     try {
+                        if(that.open)return;
                         that.writer.write(data);
                         that.writer.newLine();
                         that.writer.flush();
                     } catch (Throwable t) {
                         that.open = false;
-                        that.dispatchErrorListener(t.getMessage());
+
+                        if (t.getMessage() != null) {
+                            that.dispatchErrorListener(t.getMessage());
+                        } else {
+                            StringWriter sw = new StringWriter();
+                            PrintWriter pw = new PrintWriter(sw);
+                            t.printStackTrace(pw);
+                            that.dispatchErrorListener(sw.toString());
+                        }
                     }
                 }
             }).start();
