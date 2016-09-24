@@ -48,7 +48,6 @@ class TCPStreamClientTest extends Test {
 
                 // write all inputs to pipe
                 for (String data : inputs) {
-                    System.out.format("send :: %s\n", data);
                     client.send(data);
                 }
             }
@@ -103,7 +102,6 @@ class TCPStreamClientTest extends Test {
                         while (!this.reader.ready());
 
                         String rl = this.reader.readLine();
-                        System.out.format("server echoes => %s\n", rl);
                         this.writer.write("server:" + rl);
                         this.writer.newLine();
                         this.writer.flush();
