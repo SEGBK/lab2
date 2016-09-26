@@ -24,7 +24,9 @@ class TCPStreamClientTest extends Test {
         final TCPStream client = new TCPStream("localhost", 8080);
 
         // array of inputs that should also be outputs
-        final String[] inputs = "1,2,3,4,5,6,7,8,9".split(",");
+        final String[] inputs = new String[] {
+            "1", "2", "3", "4", "5", "6", "7", "8", "9"
+        };
 
         // create a wrapper for the end
         final FBool expectDone = new FBool();
@@ -49,6 +51,7 @@ class TCPStreamClientTest extends Test {
                 // write all inputs to pipe
                 for (String data : inputs) {
                     client.send(data);
+                    //System.out.format("writing: '%s'\n", data);
                 }
             }
         });
