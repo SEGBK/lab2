@@ -1,12 +1,12 @@
 /**
  * Game.java - lab2
- * Starts up the initial view frame.
+ * Handles the game logic.
  */
 
-import views.*;
+import lib.*;
 
 class Game {
     public static void main(String[] args) {
-        new StartView();
+        // ...
     }
 }
