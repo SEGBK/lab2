@@ -111,8 +111,9 @@ public class TCPStream extends NetworkStream {
                     if (t.getMessage() != null) {
                         that.dispatchErrorListener(t.getMessage());
                     } else if (t.getMessage().equals("Stream closed")) {
-                        // ...
+                        // ignore
                     } else {
+                        //System.out.format("error: %s\n", t.getMessage());
                         StringWriter sw = new StringWriter();
                         PrintWriter pw = new PrintWriter(sw);
                         t.printStackTrace(pw);
@@ -131,28 +132,22 @@ public class TCPStream extends NetworkStream {
      * @param data the data to send over in string form
      */
     public void send(final String data) {
-        final TCPStream that = this;
-
         if (this.socket != null && this.socket.isConnected()) {
-            new Thread(new Runnable() {
-                public void run() {
-                    try {
-                        if (!that.socket.isConnected()) return;
-                        that.writer.write(data);
-                        that.writer.newLine();
-                        that.writer.flush();
-                    } catch (Throwable t) {
-                        if (t.getMessage() != null) {
-                            that.dispatchErrorListener(t.getMessage());
-                        } else {
-                            StringWriter sw = new StringWriter();
-                            PrintWriter pw = new PrintWriter(sw);
-                            t.printStackTrace(pw);
-                            that.dispatchErrorListener(sw.toString());
-                        }
-                    }
+            try {
+                if (!this.socket.isConnected()) return;
+                this.writer.write(data);
+                this.writer.newLine();
+                this.writer.flush();
+            } catch (Throwable t) {
+                if (t.getMessage() != null) {
+                    this.dispatchErrorListener(t.getMessage());
+                } else {
+                    StringWriter sw = new StringWriter();
+                    PrintWriter pw = new PrintWriter(sw);
+                    t.printStackTrace(pw);
+                    this.dispatchErrorListener(sw.toString());
                 }
-            }).start();
+            }
         } else this.dispatchErrorListener("Error: Connection is not open.");
     }
 
