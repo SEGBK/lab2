@@ -51,6 +51,10 @@ public class UDPClient extends NetworkStream{
 			System.out.println(ex.getMessage());		
 		}
 	}
+	public void close(){
+		socket.disconnect();
+		socket.close();
+	}
 }
 
 class ListenerThread implements Runnable {

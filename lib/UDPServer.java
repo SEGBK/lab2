@@ -9,10 +9,10 @@ public class UDPServer extends NetworkStream{
 	private DatagramSocket server;
 	private InetAddress addr = null;
 	private int port;
-	public static ArrayList<InetAddress> clients;
+	public static ArrayList<Client> clients;
 
 	public void start(int port){
-		clients = new ArrayList<InetAddress>();
+		clients = new ArrayList<Client>();
 		try {
 			this.port = port;
 			addr = InetAddress.getLocalHost();
@@ -28,11 +28,22 @@ public class UDPServer extends NetworkStream{
 		receive(dataListener);
 
 		try {
-			server = new DatagramSocket(port, addr);
+			server = new DatagramSocket(port);
 		}
 		catch(SocketException ex){
 			System.out.println(ex.getMessage());		
 		}
+
+		try {
+			String handshakeData = "@" + addr.getHostAddress() + "@";
+			byte[] buf = handshakeData.getBytes();
+			DatagramPacket handshake = new DatagramPacket(buf, buf.length, addr, port);
+			server.send(handshake);
+		}
+		catch(IOException ex) {
+			System.out.println(ex.getMessage());
+		}
+
 		ServerListenerThread l = new ServerListenerThread(server, clients);
 		(new Thread(l)).start();
 	}
@@ -40,22 +51,26 @@ public class UDPServer extends NetworkStream{
 	public void send(final String data){
 		try {
 			for(int i = 0; i < clients.size(); i++){
+				Client currentClient = clients.get(i);
 				DatagramSocket socket = new DatagramSocket();
-				socket.connect(clients.get(i), port);
-				System.out.println(clients.get(i).getHostAddress());
+				socket.connect(currentClient.getInetAddress(), currentClient.getPort());
 				byte[] buf = data.getBytes();
-				DatagramPacket packet = new DatagramPacket(buf, buf.length);
+				DatagramPacket packet = new DatagramPacket(buf, buf.length,currentClient.getInetAddress(),currentClient.getPort());
 				socket.send(packet);	
 			}
 		} catch (IOException ex){
 			System.out.println(ex.getMessage());		
 		}
 	}
+	public void close(){
+		server.disconnect();
+		server.close();
+	}
 }
 
 class ServerListenerThread implements Runnable {
 	private DatagramSocket socket; 
-	private ArrayList<InetAddress> clients;
+	private ArrayList<Client> clients;
 	public void run(){
 		while(true){
 			byte[] buf = new byte[256];
@@ -65,8 +80,8 @@ class ServerListenerThread implements Runnable {
 				if ((char)p.getData()[0] == '@' && (char)p.getData()[p.getLength()-1] == '@') {
 					System.out.println("Handshake received");
 					String received = new String(p.getData(), 0, p.getLength());
-					UDPServer.clients.add(InetAddress.getByName(received.replace('@',' ').trim()));
-					System.out.println("Added: " + received.replace('@',' '));
+					UDPServer.clients.add(new Client(InetAddress.getByName(received.replace('@',' ').trim()), p.getPort()));
+					System.out.println("Added: " + received.replace('@',' ') + p.getPort());
 				} else {
 					String received = new String(p.getData(), 0, p.getLength());
 					System.out.println("Message from " + p.getAddress().getHostAddress().trim() + ": " + received);
@@ -77,7 +92,7 @@ class ServerListenerThread implements Runnable {
 			}
 		}
 	}
-	public ServerListenerThread(DatagramSocket socket, ArrayList<InetAddress> clients){
+	public ServerListenerThread(DatagramSocket socket, ArrayList<Client> clients){
 		this.socket = socket;
 		this.clients = clients;
 	}
