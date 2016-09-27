@@ -109,9 +109,9 @@ public class TCPStream extends NetworkStream {
                     }
                 } catch (Throwable t) {
                     if (t.getMessage() != null) {
-                        that.dispatchErrorListener(t.getMessage());
-                    } else if (t.getMessage().equals("Stream closed")) {
-                        // ignore
+                        if (!t.getMessage().equals("Stream closed")) {
+                            that.dispatchErrorListener(t.getMessage());
+                        }
                     } else {
                         //System.out.format("error: %s\n", t.getMessage());
                         StringWriter sw = new StringWriter();
@@ -160,9 +160,7 @@ public class TCPStream extends NetworkStream {
                 if (this.reader != null) this.reader.close();
                 if (this.writer != null) this.writer.close();
                 this.socket.close();
-            } catch (Throwable t){
-                t.printStackTrace();
-            }
+            } catch (Throwable t) {}
         } else this.dispatchErrorListener("Error: Connection is not open.");
     }
 }
