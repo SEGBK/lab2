@@ -20,7 +20,7 @@ class Game {
 
     public static void main(String[] args) {
 		String[] input;
-		int choice;
+		int choice, type;
 
 		System.out.println("\nChoose your role:");
 		System.out.println(" 1. Host");
@@ -31,45 +31,41 @@ class Game {
 			choice = Integer.parseInt(stdin.nextLine(), 10);
 		} while (choice != 1 && choice != 2);
 
-		if (choice == 1) {
-			// select a connection-type
-			System.out.println("Choose your game:");
-			System.out.println(" 1. TCP");
-			System.out.println(" 2. UDP");
-			System.out.println();
-			do {
-				System.out.print("Enter: ");
-				choice = Integer.parseInt(stdin.nextLine(), 10);
-			} while (choice != 1 && choice != 2);
+		// select a connection-type
+		System.out.println("Choose your game:");
+		System.out.println(" 1. TCP");
+		System.out.println(" 2. UDP");
+		System.out.println();
+		do {
+			System.out.print("Enter: ");
+			type = Integer.parseInt(stdin.nextLine(), 10);
+		} while (type != 1 && type != 2);
 
-			// we are the masters
+		if (choice == 1) {
 			master = true;
 			myChar = board.getTurn();
 
-			if (choice == 1) {
+			if (type == 1) {
 				stream = new TCPStream(8080);
 				System.out.println("\nAwaiting connection @:8080 ...");
 			} else {
+				System.out.print("Enter the hostname/ip address: ");
+				stream = new UDPStream(stdin.nextLine(), 8080, 8081);
+				System.out.println("\nAwaiting connection @:8081 ...");
+			}
+		} else {
+			if (type == 1) {
 				System.out.print("Enter the connection string [protocol://host:port/]: ");
 				input = stdin.nextLine().split(":");
 
-				int port = Integer.parseInt(input[2].replaceAll("[^0-9]+", ""));
-				stream = new UDPStream(input[1].replaceAll("[^0-9]+", ""), port, port + 1);
-				System.out.format("\nAwaiting connection @:%d ...\n", port + 1);
-			}
-		} else {
-			System.out.print("Enter the connection string [protocol://host:port/]: ");
-			input = stdin.nextLine().split(":");
-
-			if (input[0].equalsIgnoreCase("tcp")) {
 				stream = new TCPStream(
 					input[1].replaceAll("[^0-9]+", ""),
 					Integer.parseInt(input[2].replaceAll("[^0-9]+", ""), 10)
 				);
 			} else {
-				int port = Integer.parseInt(input[2].replaceAll("[^0-9]+", ""));
-				stream = new UDPStream(input[1].replaceAll("[^0-9]+", ""), port - 1, port);
-				System.out.format("\nAwaiting connection @:%d ...\n", port + 1);
+				System.out.print("Enter the hostname/ip address: ");
+				stream = new UDPStream(stdin.nextLine(), 8081, 8080);
+				System.out.println("\nAwaiting connection @:8080 ...");
 			}
 		}
 
@@ -81,6 +77,12 @@ class Game {
 					me.send("T:" + board.getTurn());
 					nextTurn();
 				}
+			}
+		});
+
+		stream.onDisconnect(new Runnable() {
+			public void run() {
+				System.exit(0);
 			}
 		});
 
