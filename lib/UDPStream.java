@@ -18,7 +18,7 @@ import java.io.StringWriter;
 import java.io.PrintWriter;
 
 public class UDPStream extends NetworkStream {
-	private final long PING_TIMEOUT = 3000;
+	private final long PING_TIMEOUT = 30000;
 
 	private int port;
 	private long lastPing;
