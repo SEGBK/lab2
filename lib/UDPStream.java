@@ -68,6 +68,19 @@ public class UDPStream extends NetworkStream {
 			}
 		}, 1, PING_TIMEOUT / 5);
 
+		// wait for a connection to be opened
+		new Thread() {
+			public void run() {
+				// wait for 5 seconds
+				final long start = System.currentTimeMillis();
+				while ((System.currentTimeMillis() - start) < 1000);
+
+				// wait for the connection to be opened
+				while (!that.isOpen());
+				that.dispatchConnectListener();
+			}
+		}.start();
+
 		// start the receiving thread
 		new Thread() {
 			public void run() {
@@ -90,10 +103,11 @@ public class UDPStream extends NetworkStream {
 						String data = new String(packet.getData());
 
 						// ...
-						//System.out.format("received: %s\n", data);
+						//System.out.format("received: '%s'\n", data);
 
 						// if ping, then reset counter
 						if (data.equals("PP")) {
+							//System.out.format("PING\n");
 							lastPing = System.currentTimeMillis();
 						} else {
 							for (DataListener evt : that.onDataListeners) {
@@ -123,7 +137,8 @@ public class UDPStream extends NetworkStream {
 	 * @return true if the stream is open
 	 */
 	public boolean isOpen() {
-		return this.socket != null && !this.socket.isClosed() && this.socket.isBound() && this.socket.isConnected();
+		return this.socket != null && !this.socket.isClosed()
+				&& this.socket.isBound() && this.socket.isConnected();
 	}
 
 	/**
