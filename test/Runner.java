@@ -18,8 +18,7 @@ public final class Runner {
                 new DataListenerTest(),
                 new TCPStreamClientTest(),
                 //new TCPStreamServerTest(),
-                //new UDPStreamClientTest(),
-                //new UDPStreamServerTest()
+                new UDPStreamTest()
             };
 
             public void run(Boolean success) {
