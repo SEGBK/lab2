@@ -19,6 +19,14 @@ abstract class Test {
     public abstract void test(Runnable end) throws Throwable;
 
     /**
+     * Sets the span of the timeout handler.
+     * @param timeout the span of the timeout given in milliseconds
+     */
+    protected void setTimeout(long timeout) {
+        this.timeout.setTimeout(timeout);
+    }
+
+    /**
      * Tests if two values are equal. Passes the assertion
      * if the values are equal, otherwise fails.
      * @param expected the value that is expected from the test

@@ -10,6 +10,7 @@ import java.util.TimerTask;
 
 class TimeoutHandler {
     private long startTime = 0;
+    private final Timeout timeout;
     private final FBool isOn = new FBool();
     private final RunnableContainer onFail = new RunnableContainer();
 
@@ -20,17 +21,27 @@ class TimeoutHandler {
      */
     public TimeoutHandler(final long timeout) {
         final TimeoutHandler that = this;
+        this.timeout = new Timeout(timeout);
+
         new Timer().schedule(new TimerTask() {
             public void run() {
                 long now = System.currentTimeMillis();
 
                 if (that.isOn.state()) {
-                    if ((now - that.startTime) > timeout) {
+                    if ((now - that.startTime) > that.timeout.get()) {
                         that.fail();
                     }
                 }
             }
         }, 0, 100);
+    }
+
+    /**
+     * Set the span of the timeout.
+     * @param timeout the span given in milliseconds
+     */
+    public void setTimeout(long timeout) {
+        this.timeout.set(timeout);
     }
 
     /**
@@ -76,4 +87,11 @@ class RunnableContainer {
     private Runnable runnable = new Runnable(){public void run(){}};
     public void set(Runnable runnable) { this.runnable = runnable; }
     public void run() { this.runnable.run(); }
+}
+
+class Timeout {
+    private long timeout;
+    public Timeout(long timeout) { this.set(timeout); }
+    public void set(long timeout) { this.timeout = timeout; }
+    public long get() { return this.timeout; }
 }
