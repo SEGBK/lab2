@@ -15,6 +15,23 @@ public class Board {
     final private int[] xDir = {1,1,1,0,-1,-1,-1,0};
     final private int[] yDir = {1,0,-1,-1,-1,0,1,1};
 
+    public String getTurn() {
+        return this.toChar(this.turn);
+    }
+
+    public void setTurn(String c) {
+        for (int i = 0; i < PLACES.length; i ++) {
+            if (PLACES[i].equals(c)) {
+                this.turn = i;
+                return;
+            }
+        }
+    }
+
+    public String toChar(int place) {
+        return this.PLACES[place];
+    }
+
     public boolean play(int x, int y) {
         // if you try to play somewhere where a play exist,
         // it's going to be ignored
@@ -25,28 +42,25 @@ public class Board {
         // place the player
         board[x][y] = turn;
 
-        // check if board is a winning board
-        System.out.println(PLACES[checkWinStatus()]);
-
         // change the turn
         if ((++ turn) == 3) turn = 1;
         return true;
     }
 
     public String toString() {
-        String str = "";
+        String str = "   0   1   2\n\n";
 
         for (int i = 0; i < 3; i++){
             int[] row = board[i];
 
-            str += PLACES[row[0]] + " | " + PLACES[row[1]] + " | " + PLACES[row[2]] + "\n";
-            str += i != 2 ? "---------" + "\n" : "";
+            str += i + "  " + PLACES[row[0]] + " | " + PLACES[row[1]] + " | " + PLACES[row[2]] + "\n";
+            str += i != 2 ? "   ---------" + "\n" : "";
         }
 
         return str;
     }
 
-    private int checkWinStatus() {
+    public int checkWinStatus() {
         for (int y = 0; y < 3; y ++) {
             for (int x = 0; x < 3; x ++) {
                 boolean[][] visited = new boolean[3][3];
@@ -96,9 +110,5 @@ class Coordinate{
 
     public int getY(){
         return y;
-    }
-
-    public String toString(){
-        return "[" + x + ", " + y + "]";
     }
 }
