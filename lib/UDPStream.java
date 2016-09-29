@@ -35,7 +35,7 @@ public class UDPStream extends NetworkStream {
 	public UDPStream(String host, int hostPort, int port) {
 		this.server = host;
 		this.port = hostPort;
-		
+
 		// open socket and grab errors
 		try {
 			this.socket = new DatagramSocket(port);
@@ -168,7 +168,7 @@ public class UDPStream extends NetworkStream {
 				// awesome wrapper class that lets you convert data
 				// into bytes properly
 				ByteBuffer.wrap(buffSize).putInt(buffer.length);
-				
+
 				// send the buffer with the size then the data
 				if (!that.isOpen()) return;
 				this.socket.send(new DatagramPacket(buffSize, buffSize.length));

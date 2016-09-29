@@ -64,19 +64,13 @@ public class Board {
         for (int y = 0; y < 3; y ++) {
             for (int x = 0; x < 3; x ++) {
                 boolean[][] visited = new boolean[3][3];
-                Stack<Coordinate> s = new Stack<Coordinate>();
-
                 int length = 0;
                 int current = board[x][y];
-
                 if (current == 0) break;
-                s.push(new Coordinate(x,y));
                 length ++;
-
                 for (int i = 0; i < 8; i++) {
                     int xTmp = x;
                     int yTmp = y;
-
                     for (int n = 0; n < 2; n++) {
                         xTmp += xDir[i];
                         yTmp += yDir[i];

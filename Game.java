@@ -19,6 +19,7 @@ class Game {
 	private static String myChar;
 
     public static void main(String[] args) {
+		String rawinput;
 		String[] input;
 		int choice, type;
 
@@ -55,8 +56,12 @@ class Game {
 			}
 		} else {
 			if (type == 1) {
-				System.out.print("Enter the connection string [protocol://host:port/]: ");
+				do {
+					System.out.print("Enter the connection string [protocol://host:port/]: ");
+					rawinput = stdin.nextLine();
+				} while(rawinput.indexOf(":") < 0);
 				input = stdin.nextLine().split(":");
+
 
 				stream = new TCPStream(
 					input[1].replaceAll("[^0-9]+", ""),
@@ -96,7 +101,7 @@ class Game {
 		stream.receive(new DataListener() {
 			public void eventHandler(String data) {
 				String[] input = data.split(":");
-				
+
 				switch (input[0]) {
 					case "T":
 					board.setTurn(input[1]);
