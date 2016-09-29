@@ -7,7 +7,7 @@ package lib;
 
 import java.util.ArrayList;
 
-abstract class NetworkStream {
+public abstract class NetworkStream {
     /**
      * Send data across the socket.
      * @param data the data to send over in string form
