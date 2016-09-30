@@ -74,7 +74,7 @@ public class UDPStream extends NetworkStream {
 				try {
 					// wait for 5 seconds
 					final long start = System.currentTimeMillis();
-					while (!that.isOpen() && (System.currentTimeMillis() - start) < 30000);
+					while ((System.currentTimeMillis() - start) < 5000);
 
 					// wait for the connection to be opened
 					while (!that.isOpen());
