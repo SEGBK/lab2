@@ -18,69 +18,45 @@ class Game {
 	private static boolean master = false;
 	private static String myChar;
 
+	// randomly generate number to decide who goes first
+	private final static double A = Math.random();
+
     public static void main(String[] args) {
-		String rawinput;
+		String rawinput, host;
 		String[] input;
-		int choice, type;
+		int port;
 
-		System.out.println("\nChoose your role:");
-		System.out.println(" 1. Host");
-		System.out.println(" 2. Client");
-		System.out.println();
 		do {
-			System.out.print("Enter: ");
-			choice = Integer.parseInt(stdin.nextLine(), 10);
-		} while (choice != 1 && choice != 2);
+			System.out.print("Enter the connection string or a port number to listen as TCP server [protocol://host:port/]: ");
+			rawinput = stdin.nextLine().trim();
+		} while (!rawinput.matches("[0-9]+") && !rawinput.matches("[a-zA-Z]+\\://[a-zA-Z0-9]+\\:[0-9]+(/?)"));
+		input = rawinput.split(":");
 
-		// select a connection-type
-		System.out.println("Choose your game:");
-		System.out.println(" 1. TCP");
-		System.out.println(" 2. UDP");
-		System.out.println();
-		do {
-			System.out.print("Enter: ");
-			type = Integer.parseInt(stdin.nextLine(), 10);
-		} while (type != 1 && type != 2);
-
-		if (choice == 1) {
-			master = true;
-			myChar = board.getTurn();
-
-			if (type == 1) {
-				stream = new TCPStream(8080);
-				System.out.println("\nAwaiting connection @:8080 ...");
-			} else {
-				System.out.print("Enter the hostname/ip address: ");
-				stream = new UDPStream(stdin.nextLine(), 8080, 8081);
-				System.out.println("\nAwaiting connection @:8081 ...");
-			}
+		if (rawinput.matches("[0-9]+")) {
+			stream = new TCPStream(Integer.parseInt(rawinput, 10));
+			System.out.format("\nAwaiting connection @:%s ...\n", rawinput);
 		} else {
-			if (type == 1) {
-				do {
-					System.out.print("Enter the connection string [protocol://host:port/]: ");
-					rawinput = stdin.nextLine();
-				} while (!rawinput.matches("[a-zA-Z]+\:\/\/[a-zA-Z0-9]+\:[0-9]+"));
-				input = stdin.nextLine().split(":");
+			host = input[1].replaceAll("[^a-zA-Z0-9.]+", "");
+			port = Integer.parseInt(input[2].replaceAll("[^0-9]+", ""), 10);
 
-				stream = new TCPStream(
-					input[1].replaceAll("[^0-9]+", ""),
-					Integer.parseInt(input[2].replaceAll("[^0-9]+", ""), 10)
-				);
-			} else {
-				System.out.print("Enter the hostname/ip address: ");
-				stream = new UDPStream(stdin.nextLine(), 8081, 8080);
-				System.out.println("\nAwaiting connection @:8080 ...");
+			if (input[0].equals("tcp")) stream = new TCPStream(host, port);
+			else {
+				do {
+					System.out.print("Enter a port to listen on: ");
+					rawinput = stdin.nextLine();
+				} while (!rawinput.matches("[0-9]+"));
+
+				stream = new UDPStream(host, port, Integer.parseInt(rawinput, 10));
 			}
+
+			System.out.format("\nConnecting to %s:%s ...\n", host, port);
 		}
 
 		// add all appropriate event handlers
 		final NetworkStream me = stream;
 		stream.onConnect(new Runnable() {
 			public void run() {
-				if (master) {
-					me.send("T:" + board.getTurn());
-					nextTurn();
-				}
+				me.send("M:" + A);
 			}
 		});
 
@@ -102,9 +78,14 @@ class Game {
 				String[] input = data.split(":");
 
 				switch (input[0]) {
-					case "T":
-					board.setTurn(input[1]);
-					myChar = input[1].equals("X") ? "O" : "X";
+					case "M":
+					double B = Double.parseDouble(input[1]),
+						   C = A + B; // 0 <= C <= 2
+ 
+					master = A > B;
+					board.setTurn(C >= 1 ? "X" : "O");
+					myChar = board.getTurn();
+					if (!master) myChar = myChar.equals("X") ? "O" : "X";
 					break;
 
 					case "P":
@@ -127,7 +108,7 @@ class Game {
 	private static void nextTurn() {
 		int victor;
 		if ((victor = board.checkWinStatus()) != 0) {
-			System.out.format("\n%s won!\n", board.getTurn().equals(myChar) ? "You" : "The opponent");
+			System.out.format("\n%s won!\n", !board.getTurn().equals(myChar) ? "You" : "The opponent");
 			stream.close();
 			return;
 		}
@@ -135,10 +116,10 @@ class Game {
 		System.out.format(
 			"\n%s\nPlayer turn: %s\n%s",
 			board, board.getTurn(),
-			board.getTurn().equals(myChar) ? "Awaiting opponent's play ...\n" : "Enter your place [x,y]: "
+			board.getTurn().equals(myChar) ? "Enter your place [x,y]: " : "Awaiting opponent's play ...\n"
 		);
 
-		if (board.getTurn().equals(myChar)) return;
+		if (!board.getTurn().equals(myChar)) return;
 
 		String[] input = stdin.nextLine().split(",");
 		int x = Integer.parseInt(input[0], 10),
@@ -149,7 +130,7 @@ class Game {
 
 		if ((victor = board.checkWinStatus()) == 0) nextTurn();
 		else {
-			System.out.format("\n%s won!\n", board.getTurn().equals(myChar) ? "You" : "The opponent");
+			System.out.format("\n%s won!\n", !board.getTurn().equals(myChar) ? "You" : "The opponent");
 			stream.close();
 		}
 	}
