@@ -59,9 +59,8 @@ class Game {
 				do {
 					System.out.print("Enter the connection string [protocol://host:port/]: ");
 					rawinput = stdin.nextLine();
-				} while(rawinput.indexOf(":") < 0);
+				} while (!rawinput.matches("[a-zA-Z]+\:\/\/[a-zA-Z0-9]+\:[0-9]+"));
 				input = stdin.nextLine().split(":");
-
 
 				stream = new TCPStream(
 					input[1].replaceAll("[^0-9]+", ""),
