@@ -16,9 +16,9 @@ A [Makefile](Makefile) is provided for all build steps. The following is a short
 
 ## Usage
 
-When you start the application, you are provided with a menu that lets you choose which networking
-protocol you would like to employ. If you choose TCP as a client or UDP as either client or host,
-you will be prompted for a connection string.
+When you start the application, you can enter a connection string or a port number. If you
+enter a port number, the application will assume the role of a TCP server. If you entire a connection string,
+the application proceeds accordingly.
 
 The connection string is a standard URI as defined by [RFC 3986](https://tools.ietf.org/html/rfc3986).
 
