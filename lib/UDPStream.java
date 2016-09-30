@@ -68,23 +68,18 @@ public class UDPStream extends NetworkStream {
 			}
 		}, 1, PING_TIMEOUT / 5);
 
-		// wait for a connection to be opened
-		new Thread() {
-			public void run() {
-				// wait for 5 seconds
-				final long start = System.currentTimeMillis();
-				while ((System.currentTimeMillis() - start) < 1000);
-
-				// wait for the connection to be opened
-				while (!that.isOpen());
-				that.dispatchConnectListener();
-			}
-		}.start();
-
 		// start the receiving thread
 		new Thread() {
 			public void run() {
 				try {
+					// wait for 5 seconds
+					final long start = System.currentTimeMillis();
+					while ((System.currentTimeMillis() - start) < 1000);
+
+					// wait for the connection to be opened
+					while (!that.isOpen());
+					that.dispatchConnectListener();
+
 					while (that.isOpen()) {
 						// receive data size
 						byte[] buffSize = new byte[4];
