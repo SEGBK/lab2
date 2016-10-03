@@ -111,6 +111,10 @@ class Game {
 			System.out.format("\n%s won!\n", !board.getTurn().equals(myChar) ? "You" : "The opponent");
 			stream.close();
 			return;
+		} else if (victor == -1) {
+			System.out.println("\nNobody won... try again later.");
+			stream.close();
+			return;
 		}
 
 		System.out.format(

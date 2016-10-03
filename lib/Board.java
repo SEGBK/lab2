@@ -85,7 +85,19 @@ public class Board {
             }
         }
 
-        return 0;
+        return this.possible();
+    }
+
+    private int possible() {
+        for (int x = 0; x < board.length; x ++) {
+            for (int y = 0; y < board.length; y ++) {
+                if (board[x][y] == 0) {
+                    return 0;
+                }
+            }
+        }
+
+        return 1;
     }
 }
 
