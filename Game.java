@@ -107,7 +107,7 @@ class Game {
 
 	private static void nextTurn() {
 		int victor;
-		if ((victor = board.checkWinStatus()) != 0) {
+		if ((victor = board.checkWinStatus()) > 0) {
 			System.out.format("\n%s won!\n", !board.getTurn().equals(myChar) ? "You" : "The opponent");
 			stream.close();
 			return;
