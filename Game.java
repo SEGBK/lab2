@@ -29,7 +29,7 @@ class Game {
 		do {
 			System.out.print("Enter the connection string or a port number to listen as TCP server [protocol://host:port/]: ");
 			rawinput = stdin.nextLine().trim();
-		} while (!rawinput.matches("[0-9]+") && !rawinput.matches("[a-zA-Z]+\\://[a-zA-Z0-9]+\\:[0-9]+(/?)"));
+		} while (!rawinput.matches("[0-9]+") && !rawinput.matches("[a-zA-Z]+\\://[a-zA-Z0-9.]+\\:[0-9]+(/?)"));
 		input = rawinput.split(":");
 
 		if (rawinput.matches("[0-9]+")) {
