@@ -61,6 +61,8 @@ public class Board {
     }
 
     public int checkWinStatus() {
+        if (this.possible() == -1) return -1;
+
         for (int y = 0; y < 3; y ++) {
             for (int x = 0; x < 3; x ++) {
                 boolean[][] visited = new boolean[3][3];
@@ -85,7 +87,7 @@ public class Board {
             }
         }
 
-        return this.possible();
+        return 0;
     }
 
     private int possible() {
