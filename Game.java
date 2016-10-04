@@ -132,9 +132,11 @@ class Game {
 		board.play(x, y);
 		stream.send("P:" + x + "," + y);
 
-		if ((victor = board.checkWinStatus()) == 0) nextTurn();
-		else {
+		if ((victor = board.checkWinStatus()) > 0) {
 			System.out.format("\n%s won!\n", !board.getTurn().equals(myChar) ? "You" : "The opponent");
+			stream.close();
+		} else if (victor == -1) {
+			System.out.println("\nNobody won... try again later.");
 			stream.close();
 		}
 	}
