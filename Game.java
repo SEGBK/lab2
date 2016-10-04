@@ -138,6 +138,6 @@ class Game {
 		} else if (victor == -1) {
 			System.out.println("\nNobody won... try again later.");
 			stream.close();
-		}
+		} else nextTurn();
 	}
 }
